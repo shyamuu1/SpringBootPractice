@@ -32,7 +32,8 @@ public class PostService {
 	}
 	
 	public Post getPostById(Integer id) {
-		return restTemplate.getForObject(url+id.toString(), Post.class);
+		String URL = getUrl(id);
+		return restTemplate.getForObject(URL, Post.class);
 	}
 	
 	public ResponseEntity<Post> addPost(Post p){
@@ -45,5 +46,36 @@ public class PostService {
 		return resp;
 	}
 	
+	public ResponseEntity<String> patchPost(Integer id, String patch){
+		String val = getUrl(id);
+		Post p = getPostById(id);
+		p.setTitle(patch);
+		Post resp = restTemplate.patchForObject(val, p, Post.class);
+		if(resp == null) {
+			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<String>(HttpStatus.OK);
+	}
+	
+	public ResponseEntity<String> updatePost(Integer id){
+		String title = "foo";
+		String body = "bar";
+		String URL = getUrl(id);
+		Post p = getPostById(id);
+		p.setTitle(title);
+		p.setBody(body);
+		restTemplate.put(URL, p);
+		return new ResponseEntity<String>(HttpStatus.OK);
+	}
+	
+	public ResponseEntity<String> deletePost(Integer id){
+		String builtUrl = getUrl(id);
+		restTemplate.delete(builtUrl);
+		return new ResponseEntity<String>(HttpStatus.OK);
+	}
+	
+	public String getUrl(Integer id) {
+		return url+id.toString();
+	}
 	
 }

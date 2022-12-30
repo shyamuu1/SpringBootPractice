@@ -26,13 +26,9 @@ public class PostController {
 	
 	private PostService ps;
 	
-	private RestTemplate restTemplate;
-	
-	private static final String url = "https://jsonplaceholder.typicode.com/posts/";
 	
 	@Autowired
 	public PostController(PostService ps, RestTemplate temp) {
-		this.restTemplate = temp;
 		this.ps = ps;
 	}
 	
@@ -49,37 +45,18 @@ public class PostController {
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<String> updatePost(@PathVariable Integer id){
-		String title = "foo";
-		String body = "bar";
-		
-		Post p = this.ps.getPostById(id);
-		p.setTitle(title);
-		p.setBody(body);
-		restTemplate.put(url+id.toString(), p);
-		return new ResponseEntity<String>(HttpStatus.OK);
+		return this.ps.updatePost(id);
 	}
 	
 	@PatchMapping("/{id}/{patch}")
 	public ResponseEntity<String> patchPost(@PathVariable Integer Id, @PathVariable String patch){
-		String val = getUrl(Id);
-		Post p = this.ps.getPostById(Id);
-		p.setTitle(patch);
-		Post resp = restTemplate.patchForObject(val, p, Post.class);
-		if(resp == null) {
-			return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
-		}
-		return new ResponseEntity<String>(HttpStatus.OK);
+		return this.ps.patchPost(Id, patch);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deletePost(@PathVariable Integer id){
-		String builtUrl = getUrl(id);
-		restTemplate.delete(builtUrl);
-		return new ResponseEntity<String>(HttpStatus.OK);
+		return this.ps.deletePost(id);
 	}
 	
-	public static String getUrl(Integer id) {
-		return url+id.toString();
-	}
 
 }
